@@ -10,4 +10,11 @@ export const API_ENDPOINTS = {
     GENDER_STATS: "/analytics/gender-stats",
     OVERVIEW_STATS: "/analytics/overview-stats",
   },
+  ADMIN: {
+    USERS_FILTER: "/admin/users/filter",
+    USERS_SEARCH: "/admin/users/search",
+    USERS_ADD: "/admin/users/add",
+    USERS_UPDATE: (id: string) => `/admin/users/update/${id}`,
+    USERS_DELETE: (id: string) => `/admin/users/${id}`,
+  },
 };
