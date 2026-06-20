@@ -50,9 +50,9 @@ export default function Header() {
   };
 
   return (
-    <header className="h-20 border-b border-slate-200 bg-white/85 backdrop-blur-md px-8 flex items-center justify-between sticky top-0 z-50 transition-all duration-300 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] dark:shadow-none dark:bg-slate-950/40 dark:border-slate-900/60 font-sans">
+    <header className="h-20 border-b border-slate-200 bg-white/85 backdrop-blur-md px-4 md:px-8 flex items-center justify-between sticky top-0 z-50 transition-all duration-300 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] dark:shadow-none dark:bg-slate-950/40 dark:border-slate-900/60 font-sans">
       {/* Search Bar */}
-      <div className="relative w-96">
+      <div className="relative w-40 sm:w-60 md:w-96">
         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
         <input
           type="text"
