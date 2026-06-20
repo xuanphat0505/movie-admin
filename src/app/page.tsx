@@ -3,7 +3,7 @@ import {
   StatCards,
   ViewsChart,
   GenderChart,
-  RecentMoviesTable,
+  NewMoviesTable,
 } from "@/components/dashboard";
 
 // Trang chủ Dashboard tổng quan hệ thống quản trị website phim
@@ -11,7 +11,7 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col">
       {/* Dashboard Top Header Title & Actions */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap gap-4 items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">
             Dashboard Overview
@@ -39,7 +39,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Bảng phim cập nhật gần đây */}
-      <RecentMoviesTable />
+      <NewMoviesTable />
     </div>
   );
 }

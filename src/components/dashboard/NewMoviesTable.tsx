@@ -21,7 +21,7 @@ interface Movie {
 }
 
 // hiển thị danh sách 10 phim mới thêm gần đây nhất từ PhimAPI
-export default function RecentMoviesTable() {
+export default function NewMoviesTable() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -83,7 +83,7 @@ export default function RecentMoviesTable() {
 
       {/* Table Canvas */}
       <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
+        <table className="w-full text-left border-collapse min-w-[800px]">
           <thead>
             <tr className="border-b border-slate-200 dark:border-slate-800/80 text-[10px] font-bold text-slate-500 tracking-wider uppercase">
               <th className="pb-4 pl-2">Movie</th>
@@ -136,7 +136,7 @@ export default function RecentMoviesTable() {
                     movie.modified.time,
                   ).toLocaleDateString("vi-VN", {
                     day: "2-digit",
-                    month: "short",
+                    month: "2-digit",
                     year: "numeric",
                   });
 

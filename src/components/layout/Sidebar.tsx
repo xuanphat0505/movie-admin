@@ -42,14 +42,15 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="w-72 flex flex-col justify-between h-screen sticky top-0 bg-slate-100 text-slate-600 border-r border-slate-200 p-6 flex-shrink-0 transition-colors duration-300 dark:bg-slate-950 dark:border-slate-900 dark:text-slate-300 dark:border-r-slate-900/60">
+    <aside className="w-16 md:w-72 flex flex-col justify-between h-screen sticky top-0 bg-slate-100 text-slate-600 border-r border-slate-200 p-3 md:p-6 shrink-0 transition-all duration-300 ease-in-out overflow-x-hidden dark:bg-slate-950 dark:border-slate-900 dark:text-slate-300 dark:border-r-slate-900/60">
       <div className="flex flex-col gap-8">
         {/* Logo Brand */}
-        <div className="px-2">
-          <h1 className="text-xl font-bold text-slate-800 tracking-wide flex items-center gap-2 dark:text-white">
-            <span className="text-[#ff8300]">Stream-Lab</span>
+        <div className="px-1 md:px-2 text-center md:text-left">
+          <h1 className="text-lg md:text-xl font-bold text-slate-800 tracking-wide flex items-center justify-center md:justify-start dark:text-white whitespace-nowrap">
+            <span className="text-[#ff8300]">S</span>
+            <span className="text-[#ff8300] hidden md:inline">tream-Lab</span>
           </h1>
-          <span className="text-xs text-slate-400 font-medium tracking-wider uppercase block mt-1 dark:text-slate-500">
+          <span className="text-[10px] text-slate-400 font-medium tracking-wider uppercase mt-1 dark:text-slate-500 hidden md:block whitespace-nowrap">
             Noir Admin
           </span>
         </div>
@@ -63,14 +64,15 @@ export default function Sidebar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-[14px] font-medium transition-all duration-200 ${
+                className={`flex items-center justify-center md:justify-start gap-3 px-3 py-3 md:px-4 rounded-lg text-[14px] font-medium transition-all duration-200 whitespace-nowrap ${
                   isActive
-                    ? "bg-[#ff8300]/10 text-[#ff8300] border-l-4 border-[#ff8300] rounded-l-none pl-3"
+                    ? "bg-[#ff8300]/10 text-[#ff8300] border-l-4 border-[#ff8300] rounded-l-none pl-2.5 md:pl-3"
                     : "text-slate-600 hover:bg-slate-200/50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900/40 dark:hover:text-white"
                 }`}
+                title={item.name}
               >
                 <Icon size={18} className="shrink-0" />
-                <span>{item.name}</span>
+                <span className="hidden md:inline">{item.name}</span>
               </Link>
             );
           })}
@@ -82,10 +84,11 @@ export default function Sidebar() {
         {/* Logout Link */}
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-4 py-2 text-slate-600 hover:text-rose-500 font-medium text-[14px] transition-colors w-full text-left dark:text-slate-400 cursor-pointer"
+          className="flex items-center justify-center md:justify-start gap-3 px-3 py-2 text-slate-600 hover:text-rose-500 font-medium text-[14px] transition-colors w-full dark:text-slate-400 cursor-pointer whitespace-nowrap"
+          title="Logout"
         >
           <LogOut size={18} />
-          <span>Logout</span>
+          <span className="hidden md:inline">Logout</span>
         </button>
       </div>
     </aside>
