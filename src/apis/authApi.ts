@@ -17,4 +17,18 @@ export const authApi = {
   logout: () => {
     return apiClient.post(API_ENDPOINTS.AUTH.LOGOUT);
   },
+
+  // Cập nhật thông tin tài khoản admin
+  updateProfile: (id: string, data: any) => {
+    return apiClient.put(API_ENDPOINTS.ADMIN.UPDATE_PROFILE(id), data);
+  },
+
+  // Tải ảnh đại diện admin lên hệ thống
+  uploadAvatar: (formData: FormData) => {
+    return apiClient.post(API_ENDPOINTS.ADMIN.UPLOAD_AVATAR, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  },
 };
