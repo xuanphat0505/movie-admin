@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Loader2, Film, CheckCircle, Copy, Check } from "lucide-react";
 import MovieFilterBar from "@/components/movies/MovieFilterBar";
-import MovieTable, { Movie } from "@/components/movies/MovieTable";
+import MovieTable, { type Movie } from "@/components/common/GenericMovieTable";
 import Pagination from "@/components/movies/Pagination";
 import Modal from "@/components/common/Modal";
 
@@ -28,6 +28,21 @@ export default function MoviesPage() {
   const [loadingDetail, setLoadingDetail] = useState<boolean>(false);
   const [selectedServerIndex, setSelectedServerIndex] = useState<number>(0);
   const [copiedLink, setCopiedLink] = useState<string>("");
+
+  // Hook đọc tham số từ URL khi chuyển từ trang Thể loại & Quốc gia sang
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const genreParam = params.get("genre");
+      const countryParam = params.get("country");
+      if (genreParam) {
+        setSelectedGenre(genreParam);
+      }
+      if (countryParam) {
+        setSelectedCountry(countryParam);
+      }
+    }
+  }, []);
 
   // Hook xử lý Debounce cho ô tìm kiếm
   useEffect(() => {
