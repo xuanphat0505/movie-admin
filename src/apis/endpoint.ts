@@ -16,5 +16,7 @@ export const API_ENDPOINTS = {
     USERS_ADD: "/admin/users/add",
     USERS_UPDATE: (id: string) => `/admin/users/update/${id}`,
     USERS_DELETE: (id: string) => `/admin/users/${id}`,
+    UPDATE_PROFILE: (id: string) => `/admin/update-profile/${id}`,
+    UPLOAD_AVATAR: "/admin/upload",
   },
 };
