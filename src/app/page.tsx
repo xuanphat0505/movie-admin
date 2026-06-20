@@ -1,8 +1,10 @@
-import StatCards from "@/components/dashboard/StatCards";
-import ViewsChart from "@/components/dashboard/ViewsChart";
-import CategoryChart from "@/components/dashboard/CategoryChart";
-import RecentMoviesTable from "@/components/dashboard/RecentMoviesTable";
 import { Plus } from "lucide-react";
+import {
+  StatCards,
+  ViewsChart,
+  GenderChart,
+  RecentMoviesTable,
+} from "@/components/dashboard";
 
 // Trang chủ Dashboard tổng quan hệ thống quản trị website phim
 export default function DashboardPage() {
@@ -15,7 +17,8 @@ export default function DashboardPage() {
             Dashboard Overview
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Chào mừng bạn quay trở lại, Noir Admin! Dưới đây là hoạt động hệ thống hôm nay.
+            Chào mừng bạn quay trở lại, Noir Admin! Dưới đây là hoạt động hệ
+            thống hôm nay.
           </p>
         </div>
 
@@ -32,7 +35,7 @@ export default function DashboardPage() {
       {/* Hàng chứa biểu đồ lượt xem và tỷ lệ danh mục */}
       <div className="flex flex-col lg:flex-row gap-6 mb-8 items-stretch">
         <ViewsChart />
-        <CategoryChart />
+        <GenderChart />
       </div>
 
       {/* Bảng phim cập nhật gần đây */}

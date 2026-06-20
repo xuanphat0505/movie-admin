@@ -1,8 +1,7 @@
 "use client";
 
-import React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Film,
@@ -13,10 +12,25 @@ import {
   LogOut,
   Sparkles,
 } from "lucide-react";
+import { authApi } from "@/apis/authApi";
 
 // Component Sidebar hiển thị menu điều hướng chính của trang quản trị
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  // Xử lý đăng xuất tài khoản quản trị viên
+  const handleLogout = async () => {
+    try {
+      await authApi.logout();
+    } catch (error) {
+      console.error("Lỗi khi đăng xuất:", error);
+    } finally {
+      localStorage.removeItem("adminToken");
+      localStorage.removeItem("adminUser");
+      router.push("/login");
+    }
+  };
 
   const menuItems = [
     { name: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -55,7 +69,7 @@ export default function Sidebar() {
                     : "text-slate-600 hover:bg-slate-200/50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900/40 dark:hover:text-white"
                 }`}
               >
-                <Icon size={18} className="flex-shrink-0" />
+                <Icon size={18} className="shrink-0" />
                 <span>{item.name}</span>
               </Link>
             );
@@ -66,7 +80,10 @@ export default function Sidebar() {
       {/* Footer Sidebar (Upgrade & Logout) */}
       <div className="flex flex-col gap-6">
         {/* Logout Link */}
-        <button className="flex items-center gap-3 px-4 py-2 text-slate-600 hover:text-rose-500 font-medium text-[14px] transition-colors w-full text-left dark:text-slate-400">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 px-4 py-2 text-slate-600 hover:text-rose-500 font-medium text-[14px] transition-colors w-full text-left dark:text-slate-400 cursor-pointer"
+        >
           <LogOut size={18} />
           <span>Logout</span>
         </button>

@@ -3,9 +3,10 @@
 import React, { useState, useEffect } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { Loader2 } from "lucide-react";
+import { analyticsApi } from "@/apis/analyticsApi";
 
-// Component CategoryChart hiển thị thống kê phân bố giới tính người dùng dạng biểu đồ tròn khuyết
-export default function CategoryChart() {
+// Component GenderChart hiển thị thống kê phân bố giới tính người dùng dạng biểu đồ tròn khuyết
+export default function GenderChart() {
   const [mounted, setMounted] = useState(false);
   const [genderData, setGenderData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -17,9 +18,8 @@ export default function CategoryChart() {
 
     const fetchGenderStats = async () => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-        const res = await fetch(`${apiUrl}/analytics/gender-stats`);
-        const result = await res.json();
+        const res = await analyticsApi.getGenderStats();
+        const result = res.data;
 
         if (result?.success && result?.data) {
           const { male, female, other } = result.data;
