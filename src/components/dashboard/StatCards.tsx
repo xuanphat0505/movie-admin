@@ -9,6 +9,7 @@ import {
   Minus,
   TrendingUp,
 } from "lucide-react";
+import { analyticsApi } from "@/apis/analyticsApi";
 
 // Component StatCards hiển thị 4 thẻ thống kê ở đầu trang Dashboard
 export default function StatCards() {
@@ -22,16 +23,14 @@ export default function StatCards() {
   useEffect(() => {
     const fetchAllStats = async () => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-        // Chạy song song 2 API
+        // Chạy song song 2 API (PhimAPI ngoài và Backend qua analyticsApi)
         const [phimRes, localRes] = await Promise.all([
           fetch("https://phimapi.com/danh-sach/phim-moi-cap-nhat?page=1"),
-          fetch(`${apiUrl}/analytics/overview-stats`), // URL API Backend Node.js
+          analyticsApi.getOverviewStats(),
         ]);
 
         const phimData = await phimRes.json();
-        const localData = await localRes.json();
+        const localData = localRes.data;
 
         // Cập nhật số liệu từ PhimAPI
         if (phimData?.pagination) {
