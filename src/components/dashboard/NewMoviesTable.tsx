@@ -1,26 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Edit2, Trash2, Star, CheckCircle, Loader2, Eye } from "lucide-react";
-import Modal from "@/components/common/Modal";
+import { Loader2 } from "lucide-react";
+import { Modal, GenericMovieTable } from "@/components/common";
+import { type Movie } from "@/components/common/GenericMovieTable";
+import Link from "next/link";
 
-interface Movie {
-  _id: string;
-  name: string;
-  slug: string;
-  origin_name: string;
-  poster_url: string;
-  year: number;
-  modified: {
-    time: string;
-  };
-  tmdb: {
-    type: string;
-    vote_average?: number;
-  };
-}
-
-// hiển thị danh sách 10 phim mới thêm gần đây nhất từ PhimAPI
+// hiển thị danh sách 10 phim mới thêm gần đây nhất
 export default function NewMoviesTable() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -70,173 +56,24 @@ export default function NewMoviesTable() {
   };
 
   return (
-    <div className="w-full p-6 rounded-2xl bg-white border border-slate-200 shadow-sm dark:bg-slate-900/40 dark:border-slate-900/60 dark:shadow-none">
-      {/* Table Header Controls */}
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-sm font-semibold text-slate-800 dark:text-white">
-          Recently Added Movies
-        </h3>
-        <button className="text-xs font-semibold text-[#ff8300] hover:underline">
-          View All Movies &gt;
-        </button>
-      </div>
-
-      {/* Table Canvas */}
-      <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse min-w-[800px]">
-          <thead>
-            <tr className="border-b border-slate-200 dark:border-slate-800/80 text-[10px] font-bold text-slate-500 tracking-wider uppercase">
-              <th className="pb-4 pl-2">Movie</th>
-              <th className="pb-4">Category</th>
-              <th className="pb-4">Added Date</th>
-              <th className="pb-4">Rating</th>
-              <th className="pb-4">Status</th>
-              <th className="pb-4 text-right pr-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-200 dark:divide-slate-800/50">
-            {loading
-              ? // Hiển thị 10 dòng Skeleton khi đang tải trang
-                Array.from({ length: 10 }).map((_, idx) => (
-                  <tr key={idx} className="animate-pulse">
-                    <td className="py-4 pl-2">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-12 rounded bg-slate-200 dark:bg-slate-800" />
-                        <div className="space-y-2">
-                          <div className="h-3 w-32 bg-slate-200 dark:bg-slate-800 rounded" />
-                          <div className="h-2 w-12 bg-slate-200 dark:bg-slate-800 rounded" />
-                        </div>
-                      </div>
-                    </td>
-                    <td className="py-4">
-                      <div className="h-3 w-16 bg-slate-200 dark:bg-slate-800 rounded" />
-                    </td>
-                    <td className="py-4">
-                      <div className="h-3 w-20 bg-slate-200 dark:bg-slate-800 rounded" />
-                    </td>
-                    <td className="py-4">
-                      <div className="h-3 w-8 bg-slate-200 dark:bg-slate-800 rounded" />
-                    </td>
-                    <td className="py-4">
-                      <div className="h-5 w-20 bg-slate-200 dark:bg-slate-800 rounded-full" />
-                    </td>
-                    <td className="py-4 text-right pr-2">
-                      <div className="h-6 w-12 bg-slate-200 dark:bg-slate-800 rounded ml-auto" />
-                    </td>
-                  </tr>
-                ))
-              : movies.map((movie) => {
-                  const isTvSeries = movie.tmdb?.type === "tv";
-                  const rating =
-                    movie.tmdb?.vote_average && movie.tmdb.vote_average > 0
-                      ? movie.tmdb.vote_average
-                      : 4.5;
-
-                  const addedDate = new Date(
-                    movie.modified.time,
-                  ).toLocaleDateString("vi-VN", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                  });
-
-                  return (
-                    <tr
-                      key={movie._id}
-                      className="text-xs text-slate-600 transition-colors hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-900/10"
-                    >
-                      {/* Cột Movie poster và title */}
-                      <td className="py-4 pl-2">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-12 rounded-md overflow-hidden bg-slate-100 flex-shrink-0 border border-slate-200 dark:bg-slate-800 dark:border-slate-800">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              src={movie.poster_url}
-                              alt={movie.name}
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src =
-                                  "https://images.unsplash.com/photo-1594909122845-11baa439b7bf?w=100&auto=format&fit=crop&q=60";
-                              }}
-                            />
-                          </div>
-                          <div className="min-w-0">
-                            <span
-                              className="font-semibold text-slate-800 block dark:text-white truncate max-w-[200px]"
-                              title={movie.name}
-                            >
-                              {movie.name}
-                            </span>
-                            <span className="text-[10px] text-slate-500">
-                              {movie.year}
-                            </span>
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* Cột Category */}
-                      <td className="py-4 font-medium">
-                        {isTvSeries ? "TV Series" : "Movie"}
-                      </td>
-
-                      {/* Cột Added Date */}
-                      <td className="py-4 text-slate-500 dark:text-slate-400">
-                        {addedDate}
-                      </td>
-
-                      {/* Cột Rating */}
-                      <td className="py-4">
-                        <div className="flex items-center gap-1">
-                          <Star
-                            size={13}
-                            className="fill-amber-500 text-amber-500"
-                          />
-                          <span className="font-semibold text-slate-800 dark:text-white">
-                            {rating.toFixed(1)}
-                          </span>
-                        </div>
-                      </td>
-
-                      {/* Cột Status */}
-                      <td className="py-4">
-                        {isTvSeries ? (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-orange-500/10 text-[#ff8300]">
-                            <Loader2 size={10} className="animate-spin" />
-                            Ongoing
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-500">
-                            <CheckCircle size={10} />
-                            Completed
-                          </span>
-                        )}
-                      </td>
-
-                      {/* Cột Actions */}
-                      <td className="py-4 text-right pr-2">
-                        <div className="flex items-center justify-end gap-2.5">
-                          {/* Nút xem chi tiết */}
-                          <button
-                            onClick={() => handleViewDetails(movie.slug)}
-                            className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-[#ff8300] transition-all dark:hover:bg-slate-800 dark:text-slate-400 dark:hover:text-white"
-                            title="Xem chi tiết"
-                          >
-                            <Eye size={13} />
-                          </button>
-                          <button className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-all dark:hover:bg-slate-800 dark:text-slate-400 dark:hover:text-white">
-                            <Edit2 size={13} />
-                          </button>
-                          <button className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-rose-500 transition-all dark:hover:bg-slate-800 dark:text-slate-400">
-                            <Trash2 size={13} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-          </tbody>
-        </table>
-      </div>
+    <div className="w-full">
+      {/* Tái sử dụng bảng dùng chung GenericMovieTable */}
+      <GenericMovieTable
+        movies={movies}
+        loading={loading}
+        onViewDetails={handleViewDetails}
+        showAddedDate={true}
+        showStatus={true}
+        title="New Movies Table"
+        headerAction={
+          <Link
+            href="/movies"
+            className="text-xs font-semibold text-[#ff8300] hover:underline"
+          >
+            View All Movies &gt;
+          </Link>
+        }
+      />
 
       {/* Modal chi tiết phim */}
       <Modal
