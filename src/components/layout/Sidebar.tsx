@@ -64,10 +64,10 @@ export default function Sidebar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center justify-center md:justify-start gap-3 px-3 py-3 md:px-4 rounded-lg text-[14px] font-medium transition-all duration-200 whitespace-nowrap ${
+                className={`flex items-center justify-center md:justify-start gap-3 py-3 pr-3 md:pr-4 pl-2.5 md:pl-3 rounded-lg text-[14px] font-medium transition-all duration-200 whitespace-nowrap outline-none border-l-4 ${
                   isActive
-                    ? "bg-[#ff8300]/10 text-[#ff8300] border-l-4 border-[#ff8300] rounded-l-none pl-2.5 md:pl-3"
-                    : "text-slate-600 hover:bg-slate-200/50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900/40 dark:hover:text-white"
+                    ? "bg-[#ff8300]/10 text-[#ff8300] border-[#ff8300] rounded-l-none"
+                    : "border-transparent text-slate-600 hover:bg-slate-200/50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900/40 dark:hover:text-white"
                 }`}
                 title={item.name}
               >
