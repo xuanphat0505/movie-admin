@@ -59,7 +59,12 @@ export default function NotificationItem({
 
   return (
     <div
-      className={`group relative flex items-start gap-3 p-4 transition-all hover:bg-slate-50 dark:hover:bg-slate-800/25 ${
+      onClick={() => {
+        if (!item.read) {
+          onMarkAsRead(item._id);
+        }
+      }}
+      className={`group relative flex items-start gap-3 p-4 transition-all hover:bg-slate-50 dark:hover:bg-slate-800/25 cursor-pointer ${
         !item.read ? "bg-slate-50/40 dark:bg-slate-900/10" : ""
       }`}
     >
@@ -98,7 +103,10 @@ export default function NotificationItem({
 
             {/* Nút tích để đánh dấu nhanh trạng thái đã đọc */}
             <button
-              onClick={() => onMarkAsRead(item._id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onMarkAsRead(item._id);
+              }}
               className="hidden group-hover:flex items-center justify-center w-5 h-5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer focus:outline-none"
               title="Đánh dấu đã đọc"
             >
