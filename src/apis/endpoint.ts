@@ -19,4 +19,13 @@ export const API_ENDPOINTS = {
     UPDATE_PROFILE: (id: string) => `/admin/update-profile/${id}`,
     UPLOAD_AVATAR: "/admin/upload",
   },
+  USER: {
+    GET_PROFILE: "/user",
+  },
+  NOTIFICATION: {
+    GET_ALL: "/notification",
+    UPDATE: "/notification/update",
+    READ_ONE: (id: string) => `/notification/read-one/${id}`,
+    READ_ALL: "/notification/read-all",
+  },
 };

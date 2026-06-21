@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { SocketProvider } from "@/context/SocketContext";
 import LayoutWrapper from "@/components/layout/LayoutWrapper";
 
 const inter = Inter({
@@ -42,7 +43,9 @@ export default function RootLayout({
       </head>
       <body className="min-h-full font-sans bg-[#08080a] text-slate-100 transition-colors duration-300">
         <ThemeProvider>
-          <LayoutWrapper>{children}</LayoutWrapper>
+          <SocketProvider>
+            <LayoutWrapper>{children}</LayoutWrapper>
+          </SocketProvider>
         </ThemeProvider>
       </body>
     </html>
