@@ -31,7 +31,7 @@ export default function UserFilterBar({
           placeholder="Tìm theo tên hoặc email..."
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
-          className="w-full bg-white border border-slate-200 dark:bg-slate-900/40 dark:border-slate-800/80 rounded-xl h-[38px] pl-9 pr-4 text-xs text-slate-800 dark:text-slate-350 placeholder-slate-400 focus:outline-none focus:border-[#ff8300]/50 transition-all"
+          className="w-full bg-white border border-slate-200 dark:bg-slate-900/40 dark:border-slate-800/80 rounded-xl h-[38px] pl-9 pr-4 text-xs text-slate-800 dark:text-slate-300 placeholder-slate-400 focus:outline-none focus:border-[#ff8300]/50 transition-all"
         />
       </div>
 
@@ -55,7 +55,7 @@ export default function UserFilterBar({
         >
           <option value="">Tất cả trạng thái</option>
           <option value="active">Đang hoạt động</option>
-          <option value="banned">Đang bị khóa</option>
+          <option value="inactive">Đang bị khóa</option>
         </select>
       </div>
     </div>

@@ -20,6 +20,7 @@ export default function CategoryList({
 
         return (
           <CategoryCard
+            key={item.slug}
             item={item}
             activeTab={activeTab}
             redirectUrl={redirectUrl}

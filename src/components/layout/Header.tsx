@@ -5,6 +5,9 @@ import { Bell, Sun, Moon, LogOut, User } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 import { useRouter } from "next/navigation";
 import { authApi } from "@/apis/authApi";
+import { notificationApi } from "@/apis/notificationApi";
+import NotificationDropdown from "@/components/layout/NotificationDropdown";
+import { useSocket } from "@/context/SocketContext";
 
 // Component Header chứa thanh tìm kiếm, đổi giao diện, thông báo và thông tin admin đăng nhập
 export default function Header() {
@@ -13,7 +16,29 @@ export default function Header() {
   const [adminUser, setAdminUser] = useState<any>(null);
   const [showDropdown, setShowDropdown] = useState(false);
 
+  // Trạng thái cho hệ thống thông báo
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  const { socket } = useSocket();
   const router = useRouter();
+
+  // Hàm gọi API lấy danh sách thông báo mới nhất
+  const fetchNotificationsList = async () => {
+    try {
+      const res = await notificationApi.getNotifications();
+      if (res.data?.success && Array.isArray(res.data.data)) {
+        // Sắp xếp thông báo mới nhất hiển thị trên cùng
+        const sorted = [...res.data.data].sort(
+          (a: any, b: any) =>
+            new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+        );
+        setNotifications(sorted);
+      }
+    } catch (error) {
+      console.error("Lỗi khi tải danh sách thông báo:", error);
+    }
+  };
 
   // Thiết lập trạng thái mounted và tải thông tin admin từ localStorage khi component render trên client
   useEffect(() => {
@@ -26,9 +51,61 @@ export default function Header() {
         console.error("Lỗi khi đọc thông tin admin:", error);
       }
     }
+
+    // Tải danh sách thông báo ban đầu
+    fetchNotificationsList();
+
+    // Yêu cầu quyền thông báo của trình duyệt khi tải trang
+    if (
+      typeof window !== "undefined" &&
+      "Notification" in window &&
+      Notification.permission === "default"
+    ) {
+      Notification.requestPermission();
+    }
   }, []);
 
-  // Tự động đóng dropdown khi click ra ngoài vùng chứa
+  // Lắng nghe thông báo mới từ Socket.IO Server
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNewNotification = (notification: any) => {
+      // Đẩy thông báo mới lên đầu danh sách hiển thị
+      setNotifications((prev) => {
+        if (prev.some((item) => item._id === notification._id)) {
+          return prev;
+        }
+        return [notification, ...prev];
+      });
+
+      // Hiển thị thông báo màn hình (Desktop Notification) nếu cấu hình admin bật
+      if (
+        adminUser?.adminInfo?.notificationOptions?.desktop &&
+        typeof window !== "undefined" &&
+        "Notification" in window
+      ) {
+        if (Notification.permission === "granted") {
+          const cleanMessage = notification.message.replace(/<[^>]*>/g, "");
+          new Notification("Stream-Lab Admin", {
+            body: cleanMessage,
+            icon: "/favicon.ico",
+          });
+        }
+      }
+    };
+
+    socket.on("userAdded", handleNewNotification);
+    socket.on("userUpdated", handleNewNotification);
+    socket.on("userDeleted", handleNewNotification);
+
+    return () => {
+      socket.off("userAdded", handleNewNotification);
+      socket.off("userUpdated", handleNewNotification);
+      socket.off("userDeleted", handleNewNotification);
+    };
+  }, [socket, adminUser]);
+
+  // Tự động đóng profile dropdown khi click ra ngoài vùng chứa
   useEffect(() => {
     if (!showDropdown) return;
     const handleCloseDropdown = () => setShowDropdown(false);
@@ -48,6 +125,36 @@ export default function Header() {
       router.push("/login");
     }
   };
+
+  // Đánh dấu một thông báo cụ thể là đã đọc
+  const handleMarkAsRead = async (id: string) => {
+    try {
+      const res = await notificationApi.readOne(id);
+      if (res.data?.success) {
+        setNotifications((prev) =>
+          prev.map((item) => (item._id === id ? { ...item, read: true } : item))
+        );
+      }
+    } catch (error) {
+      console.error("Lỗi khi đọc thông báo:", error);
+    }
+  };
+
+  // Đánh dấu tất cả thông báo là đã đọc
+  const handleMarkAllAsRead = async () => {
+    try {
+      const res = await notificationApi.readAll();
+      if (res.data?.success) {
+        setNotifications((prev) =>
+          prev.map((item) => ({ ...item, read: true }))
+        );
+      }
+    } catch (error) {
+      console.error("Lỗi khi đọc tất cả thông báo:", error);
+    }
+  };
+
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
     <header className="h-20 border-b border-slate-200 bg-white/85 backdrop-blur-md px-4 md:px-8 flex items-center justify-end sticky top-0 z-50 transition-all duration-300 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] dark:shadow-none dark:bg-slate-950/40 dark:border-slate-900/60 font-sans">
@@ -71,10 +178,30 @@ export default function Header() {
         </button>
 
         {/* Notification Bell */}
-        <button className="relative p-2.5 rounded-full hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-all dark:hover:bg-slate-900/60 dark:text-slate-400 dark:hover:text-white cursor-pointer">
-          <Bell size={18} />
-          <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-amber-500 rounded-full"></span>
-        </button>
+        <div className="relative">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowNotifications(!showNotifications);
+              setShowDropdown(false); // Đóng profile dropdown nếu đang mở
+            }}
+            className="relative p-2.5 rounded-full hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-all dark:hover:bg-slate-900/60 dark:text-slate-400 dark:hover:text-white cursor-pointer focus:outline-none"
+            title="Thông báo"
+          >
+            <Bell size={18} />
+            {unreadCount > 0 && (
+              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-[#ff8300] rounded-full animate-pulse" />
+            )}
+          </button>
+
+          <NotificationDropdown
+            isOpen={showNotifications}
+            onClose={() => setShowNotifications(false)}
+            notifications={notifications}
+            onMarkAsRead={handleMarkAsRead}
+            onMarkAllAsRead={handleMarkAllAsRead}
+          />
+        </div>
 
         {/* User Info & Avatar với menu Dropdown */}
         <div className="relative">
@@ -82,6 +209,7 @@ export default function Header() {
             onClick={(e) => {
               e.stopPropagation(); // Tránh kích hoạt sự kiện đóng trên window
               setShowDropdown(!showDropdown);
+              setShowNotifications(false); // Đóng notifications dropdown nếu đang mở
             }}
             className="flex items-center gap-3 border-l border-slate-200 pl-6 dark:border-slate-800/80 cursor-pointer focus:outline-none group"
           >
@@ -148,3 +276,4 @@ export default function Header() {
     </header>
   );
 }
+

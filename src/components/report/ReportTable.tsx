@@ -89,7 +89,7 @@ export default function ReportTable({ reports, onOpenDetail }: ReportTableProps)
                           report.status === "pending"
                             ? "bg-rose-500 animate-pulse"
                             : report.status === "resolving"
-                              ? "bg-amber-550"
+                              ? "bg-amber-500"
                               : report.status === "resolved"
                                 ? "bg-emerald-500"
                                 : "bg-slate-500"
