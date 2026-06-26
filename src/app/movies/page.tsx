@@ -1,16 +1,19 @@
 "use client";
 
+import { useState } from "react";
 import {
   MovieHeader,
   MovieFilterBar,
   Pagination,
   MovieTable,
   ModalMovie,
+  AddNewMovieModal,
 } from "@/components/movies";
 import { useMovies } from "@/hooks/useMovies";
 
 // Trang quản lý phim, hiển thị danh sách phim và các thao tác lọc/tìm kiếm
 export default function MoviesPage() {
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const {
     movies,
     loading,
@@ -33,10 +36,16 @@ export default function MoviesPage() {
     handleResetFilters,
   } = useMovies();
 
+  // Xử lý khi thêm phim mới thành công
+  const handleAddMovie = (movieData: any) => {
+    console.log("Dữ liệu phim mới:", movieData);
+    alert(`Đã thêm phim "${movieData.name}" thành công (Mock)!`);
+  };
+
   return (
     <div className="flex flex-col h-full font-sans">
       {/* Header trang */}
-      <MovieHeader />
+      <MovieHeader onOpenAddModal={() => setIsAddModalOpen(true)} />
 
       {/* Bộ lọc phim */}
       <MovieFilterBar
@@ -59,7 +68,7 @@ export default function MoviesPage() {
       />
 
       {/* Phân trang */}
-      {!loading && movies.length > 0 && (
+      {!loading && movies && movies.length > 0 && (
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
@@ -73,6 +82,13 @@ export default function MoviesPage() {
         onClose={() => setIsModalOpen(false)}
         movieDetail={movieDetail}
         loadingDetail={loadingDetail}
+      />
+
+      {/* Modal thêm phim mới */}
+      <AddNewMovieModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAdd={handleAddMovie}
       />
     </div>
   );

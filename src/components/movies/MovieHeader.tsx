@@ -1,18 +1,28 @@
-import { Film } from "lucide-react";
+import { Film, Plus } from "lucide-react";
+import { PageHeader } from "@/components/common";
 
-export default function MovieHeader() {
+interface MovieHeaderProps {
+  onOpenAddModal?: () => void;
+}
+
+// Component hiển thị phần đầu trang quản lý phim, sử dụng PageHeader dùng chung
+export default function MovieHeader({ onOpenAddModal }: MovieHeaderProps) {
+  const actionButton = (
+    <button
+      onClick={onOpenAddModal}
+      className="bg-[#ff8300] hover:bg-[#ff8300]/90 text-white font-semibold text-xs py-2.5 px-4.5 rounded-lg flex items-center gap-2 transition-all shadow-lg shadow-[#ff8300]/10 cursor-pointer w-fit"
+    >
+      <Plus size={16} />
+      <span>Thêm phim mới</span>
+    </button>
+  );
+
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
-          <Film className="text-[#ff8300]" size={24} />
-          <span>Quản lý danh sách phim</span>
-        </h1>
-        <p className="text-xs text-slate-500 mt-1 dark:text-slate-400">
-          Duyệt, tìm kiếm và kiểm duyệt nguồn phim trực tiếp từ hệ sinh thái
-          KKPhim API.
-        </p>
-      </div>
-    </div>
+    <PageHeader
+      title="Quản lý danh sách phim"
+      description="Duyệt, tìm kiếm và kiểm duyệt nguồn phim trực tiếp từ hệ sinh thái KKPhim API."
+      icon={Film}
+      actionButton={actionButton}
+    />
   );
 }

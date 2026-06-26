@@ -11,9 +11,9 @@ export default function ReportTable({ reports, onOpenDetail }: ReportTableProps)
   return (
     <div className="bg-white border border-slate-200/80 rounded-2xl dark:bg-slate-900/40 dark:border-slate-900/60 overflow-hidden flex flex-col">
       <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
+        <table className="w-full text-left border-collapse min-w-[900px]">
           <thead>
-            <tr className="border-b border-slate-100/50 dark:border-slate-800/50 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+            <tr className="border-b border-slate-100/50 dark:border-slate-800/50 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider whitespace-nowrap">
               <th className="px-6 py-4">Mã / Tên Phim</th>
               <th className="px-6 py-4">Tập phim</th>
               <th className="px-6 py-4">Loại sự cố</th>
