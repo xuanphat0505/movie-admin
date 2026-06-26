@@ -88,7 +88,7 @@ export default function GenericMovieTable({
               // Hiển thị skeleton loaders
               Array.from({ length: title ? 5 : 8 }).map((_, idx) => (
                 <tr key={idx} className="animate-pulse">
-                  <td className="py-4 pl-2">
+                  <td className="py-4 px-2">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-12 rounded bg-slate-200 dark:bg-slate-800" />
                       <div className="space-y-2">
@@ -143,7 +143,7 @@ export default function GenericMovieTable({
                     className="text-xs text-slate-600 transition-colors hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-900/10"
                   >
                     {/* Cột Phim */}
-                    <td className="py-4 pl-2">
+                    <td className="py-4 px-2">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-12 rounded-md overflow-hidden bg-slate-100 flex-shrink-0 border border-slate-200 dark:bg-slate-800 dark:border-slate-800">
                           {/* eslint-disable-next-line @next/next/no-img-element */}

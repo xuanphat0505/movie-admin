@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Settings2, CheckCircle, AlertCircle } from "lucide-react";
+import { PageHeader } from "@/components/common";
 import {
   SettingsTabs,
   ProfileForm,
@@ -53,15 +54,11 @@ export default function SettingsPage() {
   return (
     <div className="flex flex-col h-full font-sans">
       {/* Tiêu đề cài đặt */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
-          <Settings2 className="text-[#ff8300]" size={24} />
-          <span>Cài đặt hệ thống</span>
-        </h1>
-        <p className="text-xs text-slate-500 mt-1 dark:text-slate-400">
-          Quản lý tài khoản quản trị viên cá nhân và tinh chỉnh các tham số vận hành nền tảng.
-        </p>
-      </div>
+      <PageHeader
+        title="Cài đặt hệ thống"
+        description="Quản lý tài khoản quản trị viên cá nhân và tinh chỉnh các tham số vận hành nền tảng."
+        icon={Settings2}
+      />
 
       {/* Hiển thị Alert Banner báo trạng thái */}
       {alert && (
