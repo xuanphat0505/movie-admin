@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Modal from "@/components/common/Modal";
 import { ErrorReport } from "@/app/reports/page";
+import { toast } from "@/utils/toast";
 
 interface ReportCreateModalProps {
   isOpen: boolean;
@@ -45,7 +46,7 @@ export default function ReportCreateModal({
       !newReportData.reportedBy ||
       !newReportData.email
     ) {
-      alert("Vui lòng nhập đầy đủ thông tin bắt buộc!");
+      toast.error("Vui lòng nhập đầy đủ thông tin bắt buộc!");
       return;
     }
 

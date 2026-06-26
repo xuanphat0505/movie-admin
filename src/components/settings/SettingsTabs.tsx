@@ -40,7 +40,7 @@ export const SETTINGS_TABS: SettingTab[] = [
 interface SettingsTabsProps {
   activeTab: TabId;
   setActiveTab: (id: TabId) => void;
-  onTabChange: () => void;
+  onTabChange?: () => void;
 }
 
 // Component chứa danh sách các tab điều hướng cấu hình bên trái trang Settings
@@ -60,7 +60,7 @@ export default function SettingsTabs({
             key={tab.id}
             onClick={() => {
               setActiveTab(tab.id);
-              onTabChange();
+              if (onTabChange) onTabChange();
             }}
             className={`w-full text-left p-4 rounded-2xl border transition-all flex items-start gap-3 cursor-pointer ${
               isActive

@@ -3,6 +3,7 @@ import { Loader2, UserX } from "lucide-react";
 import Modal from "@/components/common/Modal";
 import { UserType } from "@/app/users/page";
 import { userApi } from "@/apis/userApi";
+import { toast } from "@/utils/toast";
 
 interface UserDeleteModalProps {
   isOpen: boolean;
@@ -27,14 +28,15 @@ export default function UserDeleteModal({
     try {
       const res = await userApi.deleteUser(userToDelete._id);
       if (res.data?.success) {
+        toast.success(`Đã xóa tài khoản "${userToDelete.username}" thành công!`);
         onSuccess();
         onClose();
       } else {
-        alert(res.data?.message || "Xóa người dùng thất bại");
+        toast.error(res.data?.message || "Xóa người dùng thất bại");
       }
     } catch (error: any) {
       console.error("Lỗi khi xóa người dùng:", error);
-      alert(error.response?.data?.message || "Lỗi máy chủ khi xóa người dùng");
+      toast.error(error.response?.data?.message || "Lỗi máy chủ khi xóa người dùng");
     } finally {
       setSubmitting(false);
     }
