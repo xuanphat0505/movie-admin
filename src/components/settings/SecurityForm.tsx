@@ -1,16 +1,15 @@
 import React, { useState } from "react";
 import { Loader2, Save, Eye, EyeOff } from "lucide-react";
 import { authApi } from "@/apis/authApi";
+import { toast } from "@/utils/toast";
 
 interface SecurityFormProps {
   currentAdmin: any;
-  onAlert: (alert: { type: "success" | "error"; message: string } | null) => void;
 }
 
 // Component chứa biểu mẫu thay đổi mật khẩu của quản trị viên
 export default function SecurityForm({
   currentAdmin,
-  onAlert,
 }: SecurityFormProps) {
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -32,20 +31,16 @@ export default function SecurityForm({
     if (!currentAdmin?._id) return;
 
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      onAlert({ type: "error", message: "Mật khẩu xác nhận không trùng khớp!" });
+      toast.error("Mật khẩu xác nhận không trùng khớp!");
       return;
     }
 
     if (passwordForm.newPassword.length < 6) {
-      onAlert({
-        type: "error",
-        message: "Mật khẩu mới phải dài tối thiểu 6 ký tự!",
-      });
+      toast.error("Mật khẩu mới phải dài tối thiểu 6 ký tự!");
       return;
     }
 
     setLoading(true);
-    onAlert(null);
 
     try {
       const res = await authApi.updateProfile(currentAdmin._id, {
@@ -54,10 +49,7 @@ export default function SecurityForm({
       });
 
       if (res.data?.success) {
-        onAlert({
-          type: "success",
-          message: "Thay đổi mật khẩu tài khoản thành công!",
-        });
+        toast.success("Thay đổi mật khẩu tài khoản thành công!");
         setPasswordForm({
           currentPassword: "",
           newPassword: "",
@@ -66,10 +58,7 @@ export default function SecurityForm({
       }
     } catch (error: any) {
       console.error("Lỗi đổi mật khẩu:", error);
-      onAlert({
-        type: "error",
-        message: error.response?.data?.message || "Lỗi thay đổi mật khẩu!",
-      });
+      toast.error(error.response?.data?.message || "Lỗi thay đổi mật khẩu!");
     } finally {
       setLoading(false);
     }

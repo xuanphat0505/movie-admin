@@ -1,18 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
 import { User, Loader2, Upload, Save } from "lucide-react";
 import { authApi } from "@/apis/authApi";
+import { toast } from "@/utils/toast";
 
 interface ProfileFormProps {
   currentAdmin: any;
   onProfileUpdate: (updatedAdmin: any) => void;
-  onAlert: (alert: { type: "success" | "error"; message: string } | null) => void;
 }
 
 // Component chứa biểu mẫu cập nhật thông tin hồ sơ và ảnh đại diện của quản trị viên
 export default function ProfileForm({
   currentAdmin,
   onProfileUpdate,
-  onAlert,
 }: ProfileFormProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [uploading, setUploading] = useState<boolean>(false);
@@ -56,10 +55,7 @@ export default function ProfileForm({
     if (!file) return;
 
     if (file.size > 3 * 1024 * 1024) {
-      onAlert({
-        type: "error",
-        message: "Kích thước ảnh đại diện không được vượt quá 3MB!",
-      });
+      toast.error("Kích thước ảnh đại diện không được vượt quá 3MB!");
       return;
     }
 
@@ -67,26 +63,20 @@ export default function ProfileForm({
     formData.append("avatar", file);
 
     setUploading(true);
-    onAlert(null);
 
     try {
       const res = await authApi.uploadAvatar(formData);
       if (res.data?.success && res.data?.url) {
         setProfileForm((prev) => ({ ...prev, avatar: res.data.url }));
-        onAlert({ type: "success", message: "Tải ảnh đại diện lên thành công!" });
+        toast.success("Tải ảnh đại diện lên thành công!");
       } else {
-        onAlert({
-          type: "error",
-          message: res.data?.message || "Tải ảnh lên thất bại.",
-        });
+        toast.error(res.data?.message || "Tải ảnh lên thất bại.");
       }
     } catch (error: any) {
       console.error("Lỗi upload avatar:", error);
-      onAlert({
-        type: "error",
-        message:
-          error.response?.data?.message || "Lỗi đường truyền tải ảnh!",
-      });
+      toast.error(
+        error.response?.data?.message || "Lỗi đường truyền tải ảnh!"
+      );
     } finally {
       setUploading(false);
     }
@@ -98,7 +88,6 @@ export default function ProfileForm({
     if (!currentAdmin?._id) return;
 
     setLoading(true);
-    onAlert(null);
 
     try {
       const payload = {
@@ -115,11 +104,9 @@ export default function ProfileForm({
         const updatedAdmin = res.data.data;
         onProfileUpdate(updatedAdmin);
 
-        onAlert({
-          type: "success",
-          message:
-            "Cập nhật hồ sơ cá nhân thành công! Giao diện sẽ tải lại để áp dụng...",
-        });
+        toast.success(
+          "Cập nhật hồ sơ cá nhân thành công! Giao diện sẽ tải lại để áp dụng..."
+        );
 
         // Tải lại trang để đồng bộ ảnh đại diện trên Header & Sidebar
         setTimeout(() => {
@@ -128,10 +115,7 @@ export default function ProfileForm({
       }
     } catch (error: any) {
       console.error("Lỗi cập nhật hồ sơ:", error);
-      onAlert({
-        type: "error",
-        message: error.response?.data?.message || "Có lỗi xảy ra khi lưu hồ sơ.",
-      });
+      toast.error(error.response?.data?.message || "Có lỗi xảy ra khi lưu hồ sơ.");
     } finally {
       setLoading(false);
     }

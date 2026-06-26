@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { Loader2, Save } from "lucide-react";
+import { toast } from "@/utils/toast";
 
-interface SystemFormProps {
-  onAlert: (alert: { type: "success" | "error"; message: string } | null) => void;
-}
+interface SystemFormProps {}
 
 // Component chứa biểu mẫu cấu hình hệ thống (giả lập các tham số vận hành)
-export default function SystemForm({ onAlert }: SystemFormProps) {
+export default function SystemForm({}: SystemFormProps) {
   const [loading, setLoading] = useState<boolean>(false);
 
   const [systemForm, setSystemForm] = useState({
@@ -20,14 +19,10 @@ export default function SystemForm({ onAlert }: SystemFormProps) {
   const handleSaveSystemConfig = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    onAlert(null);
 
     setTimeout(() => {
       setLoading(false);
-      onAlert({
-        type: "success",
-        message: "Đã lưu cấu hình vận hành hệ thống thành công (Mô phỏng)!",
-      });
+      toast.success("Đã lưu cấu hình vận hành hệ thống thành công (Mô phỏng)!");
     }, 800);
   };
 

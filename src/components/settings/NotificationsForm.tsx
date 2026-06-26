@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Loader2, Save } from "lucide-react";
 import { authApi } from "@/apis/authApi";
+import { toast } from "@/utils/toast";
 
 interface NotificationsFormProps {
   currentAdmin: any;
-  onAlert: (alert: { type: "success" | "error"; message: string } | null) => void;
 }
 
 // Component chứa biểu mẫu cấu hình kênh thông báo nhận tin của quản trị viên
 export default function NotificationsForm({
   currentAdmin,
-  onAlert,
 }: NotificationsFormProps) {
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -35,7 +34,6 @@ export default function NotificationsForm({
     if (!currentAdmin?._id) return;
 
     setLoading(true);
-    onAlert(null);
 
     try {
       const payload = {
@@ -51,18 +49,13 @@ export default function NotificationsForm({
 
       if (res.data?.success && res.data?.data) {
         localStorage.setItem("adminUser", JSON.stringify(res.data.data));
-        onAlert({
-          type: "success",
-          message: "Đã lưu cài đặt thông báo thành công!",
-        });
+        toast.success("Đã lưu cài đặt thông báo thành công!");
       }
     } catch (error: any) {
       console.error("Lỗi lưu cấu hình thông báo:", error);
-      onAlert({
-        type: "error",
-        message:
-          error.response?.data?.message || "Lỗi lưu cấu hình thông báo!",
-      });
+      toast.error(
+        error.response?.data?.message || "Lỗi lưu cấu hình thông báo!"
+      );
     } finally {
       setLoading(false);
     }

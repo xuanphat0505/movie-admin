@@ -11,6 +11,7 @@ import {
   UserModalForm,
   UserDeleteModal,
 } from "@/components/users";
+import { toast } from "@/utils/toast";
 
 // Định nghĩa kiểu dữ liệu User tương ứng với model từ database backend
 export interface UserType {
@@ -153,12 +154,12 @@ export default function UsersPage() {
   // Chuẩn bị xóa người dùng
   const handleOpenDeleteConfirm = (user: UserType) => {
     if (user._id === currentAdmin?.id) {
-      alert("Bạn không thể tự xóa tài khoản của chính mình!");
+      toast.error("Bạn không thể tự xóa tài khoản của chính mình!");
       return;
     }
     if (user.role === "admin") {
-      alert(
-        "Hệ thống không cho phép xóa tài khoản quản trị viên trực tiếp từ đây!",
+      toast.error(
+        "Hệ thống không cho phép xóa tài khoản quản trị viên trực tiếp từ đây!"
       );
       return;
     }

@@ -10,6 +10,7 @@ import {
   AddNewMovieModal,
 } from "@/components/movies";
 import { useMovies } from "@/hooks/useMovies";
+import { toast } from "@/utils/toast";
 
 // Trang quản lý phim, hiển thị danh sách phim và các thao tác lọc/tìm kiếm
 export default function MoviesPage() {
@@ -39,7 +40,7 @@ export default function MoviesPage() {
   // Xử lý khi thêm phim mới thành công
   const handleAddMovie = (movieData: any) => {
     console.log("Dữ liệu phim mới:", movieData);
-    alert(`Đã thêm phim "${movieData.name}" thành công (Mock)!`);
+    toast.success(`Đã thêm phim "${movieData.name}" thành công (Mock)!`);
   };
 
   return (

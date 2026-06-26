@@ -11,6 +11,7 @@ import {
   ReportDetailModal,
   ReportCreateModal,
 } from "@/components/report";
+import { toast } from "@/utils/toast";
 
 // Định nghĩa kiểu dữ liệu cho Báo cáo lỗi phim từ người dùng
 export interface ErrorReport {
@@ -163,12 +164,13 @@ export default function ReportsPage() {
 
     setReports([newReport, ...reports]);
     setIsCreateOpen(false);
+    toast.success("Đã tạo báo cáo lỗi thành công!");
   };
 
   // Hàm xuất danh sách báo cáo sự cố hiện tại ra file CSV hỗ trợ tiếng Việt
   const handleExportCSV = () => {
     if (filteredReports.length === 0) {
-      alert("Không có dữ liệu báo cáo nào để xuất!");
+      toast.warning("Không có dữ liệu báo cáo nào để xuất!");
       return;
     }
 
