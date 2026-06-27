@@ -28,4 +28,5 @@ export const API_ENDPOINTS = {
     READ_ONE: (id: string) => `/notification/read-one/${id}`,
     READ_ALL: "/notification/read-all",
   },
+  SETTING: "/setting",
 };
