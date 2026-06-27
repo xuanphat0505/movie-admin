@@ -1,30 +1,65 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Loader2, Save } from "lucide-react";
 import { toast } from "@/utils/toast";
+import { settingApi, SystemSettings } from "@/apis/settingApi";
 
 interface SystemFormProps {}
 
-// Component chứa biểu mẫu cấu hình hệ thống (giả lập các tham số vận hành)
+// Component chứa biểu mẫu cấu hình hệ thống bao gồm thông tin bảo trì, hotline, facebook, số bài hiển thị
 export default function SystemForm({}: SystemFormProps) {
   const [loading, setLoading] = useState<boolean>(false);
+  const [fetching, setFetching] = useState<boolean>(true);
 
-  const [systemForm, setSystemForm] = useState({
+  const [systemForm, setSystemForm] = useState<SystemSettings>({
     maintenanceMode: false,
     pageLimit: 12,
-    hotline: "1900 6789",
-    facebookUrl: "https://facebook.com/streamlab.vn",
+    hotline: "",
+    facebookUrl: "",
   });
 
-  // Gọi sự kiện lưu cấu hình (mô phỏng delay)
-  const handleSaveSystemConfig = (e: React.FormEvent) => {
+  // tải dữ liệu cấu hình hệ thống 
+  useEffect(() => {
+    const fetchSystemConfig = async () => {
+      try {
+        const config = await settingApi.getSettings();
+        setSystemForm(config);
+      } catch (error: any) {
+        console.error("Lỗi tải cấu hình hệ thống:", error);
+        toast.error("Không thể tải cấu hình hệ thống từ máy chủ!");
+      } finally {
+        setFetching(false);
+      }
+    };
+    fetchSystemConfig();
+  }, []);
+
+  // lưu cấu hình hệ thống mới
+  const handleSaveSystemConfig = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    setTimeout(() => {
+    try {
+      const config = await settingApi.updateSettings(systemForm);
+      setSystemForm(config);
+      toast.success("Đã lưu cấu hình vận hành hệ thống thành công!");
+    } catch (error: any) {
+      console.error("Lỗi lưu cấu hình hệ thống:", error);
+      toast.error(
+        error.response?.data?.message || "Có lỗi xảy ra khi lưu cấu hình!"
+      );
+    } finally {
       setLoading(false);
-      toast.success("Đã lưu cấu hình vận hành hệ thống thành công (Mô phỏng)!");
-    }, 800);
+    }
   };
+
+  if (fetching) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <Loader2 className="animate-spin text-[#ff8300] mb-2" size={24} />
+        <span className="text-slate-400 text-xs">Đang tải cấu hình hệ thống...</span>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSaveSystemConfig} className="space-y-6 text-xs">
@@ -59,7 +94,7 @@ export default function SystemForm({}: SystemFormProps) {
             }
             className={`w-11 h-6 rounded-full transition-all relative shrink-0 cursor-pointer ${
               systemForm.maintenanceMode
-                ? "bg-rose-500"
+                ? "bg-[#ff8300]"
                 : "bg-slate-200 dark:bg-slate-700"
             }`}
           >
