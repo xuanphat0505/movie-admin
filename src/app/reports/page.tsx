@@ -12,6 +12,11 @@ import {
   ReportCreateModal,
 } from "@/components/report";
 import { toast } from "@/utils/toast";
+import {
+  fetchAllReports,
+  updateReportStatus as apiUpdateReportStatus,
+  createReport as apiCreateReport,
+} from "@/apis/reportApi";
 
 // Định nghĩa kiểu dữ liệu cho Báo cáo lỗi phim từ người dùng
 export interface ErrorReport {
@@ -26,67 +31,11 @@ export interface ErrorReport {
   createdAt: string;
 }
 
-// Hằng số chứa danh sách mock dữ liệu báo cáo lỗi ban đầu
-const MOCK_REPORTS: ErrorReport[] = [
-  {
-    id: "REP-001",
-    movieName: "Đấu Phá Thương Khung (Phần 5)",
-    episode: "Tập 104",
-    errorType: "link",
-    reportedBy: "Nguyễn Văn An",
-    email: "an.nguyen@gmail.com",
-    description: "Link tập 104 bị hỏng, khi bấm vào hiện màn hình đen và không load được video.",
-    status: "pending",
-    createdAt: "2026-06-20T10:15:30Z",
-  },
-  {
-    id: "REP-002",
-    movieName: "Thần Điêu Đại Hiệp (2006)",
-    episode: "Tập 15",
-    errorType: "subtitle",
-    reportedBy: "Trần Thị Bích",
-    email: "bich.tran@yahoo.com",
-    description: "Phụ đề tập này bị lệch khoảng 5 giây so với âm thanh, xem rất khó chịu.",
-    status: "resolving",
-    createdAt: "2026-06-19T14:20:00Z",
-  },
-  {
-    id: "REP-003",
-    movieName: "One Piece (Đảo Hải Tặc)",
-    episode: "Tập 1109",
-    errorType: "lag",
-    reportedBy: "Lê Minh Tuấn",
-    email: "tuanlm@outlook.com",
-    description: "Video giật lag liên tục dù tôi dùng mạng tốc độ cao. Các phim khác vẫn xem bình thường.",
-    status: "resolved",
-    createdAt: "2026-06-18T09:05:12Z",
-  },
-  {
-    id: "REP-004",
-    movieName: "Dune: Hành Tinh Cát (Phần 2)",
-    episode: "Full Movie",
-    errorType: "copyright",
-    reportedBy: "Warner Bros Protection",
-    email: "copyright@warnerbros.com",
-    description: "Yêu cầu gỡ bỏ phim vì vi phạm bản quyền phát hành chính thức tại Việt Nam.",
-    status: "pending",
-    createdAt: "2026-06-17T16:45:00Z",
-  },
-  {
-    id: "REP-005",
-    movieName: "Trường Tương Tư (Phần 2)",
-    episode: "Tập 4",
-    errorType: "other",
-    reportedBy: "Phạm Minh Hoàng",
-    email: "hoangpm@gmail.com",
-    description: "Tập này bị lặp âm thanh một đoạn dài khoảng 3 phút ở giữa phim.",
-    status: "dismissed",
-    createdAt: "2026-06-16T11:30:22Z",
-  },
-];
+
+
 
 export default function ReportsPage() {
-  const [reports, setReports] = useState<ErrorReport[]>(MOCK_REPORTS);
+  const [reports, setReports] = useState<ErrorReport[]>([]);
   const [loadingStats, setLoadingStats] = useState<boolean>(true);
 
   // States lưu số lượng tương tác thời gian thực từ API backend
@@ -104,10 +53,21 @@ export default function ReportsPage() {
   const [selectedReport, setSelectedReport] = useState<ErrorReport | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState<boolean>(false);
 
-  // Gọi API tổng quan của backend để lấy số lượt bình luận và phim yêu thích thực tế khi mount
+  // Gọi API tổng quan và danh sách báo cáo thực tế khi mount
   useEffect(() => {
     fetchLiveStats();
+    fetchReports();
   }, []);
+
+  const fetchReports = async () => {
+    try {
+      const data = await fetchAllReports();
+      setReports(data);
+    } catch (error) {
+      console.error("Lỗi khi tải danh sách báo cáo lỗi:", error);
+      toast.error("Không thể tải danh sách báo cáo lỗi");
+    }
+  };
 
   const fetchLiveStats = async () => {
     setLoadingStats(true);
@@ -133,12 +93,21 @@ export default function ReportsPage() {
   };
 
   // Cập nhật trạng thái của báo cáo lỗi
-  const handleUpdateStatus = (id: string, newStatus: ErrorReport["status"]) => {
-    setReports((prev) =>
-      prev.map((rep) => (rep.id === id ? { ...rep, status: newStatus } : rep))
-    );
-    if (selectedReport && selectedReport.id === id) {
-      setSelectedReport({ ...selectedReport, status: newStatus });
+  const handleUpdateStatus = async (id: string, newStatus: ErrorReport["status"]) => {
+    try {
+      const success = await apiUpdateReportStatus(id, newStatus);
+      if (success) {
+        setReports((prev) =>
+          prev.map((rep) => (rep.id === id ? { ...rep, status: newStatus } : rep))
+        );
+        if (selectedReport && selectedReport.id === id) {
+          setSelectedReport({ ...selectedReport, status: newStatus });
+        }
+        toast.success("Cập nhật trạng thái thành công!");
+      }
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái báo cáo:", error);
+      toast.error("Cập nhật trạng thái thất bại!");
     }
   };
 
@@ -148,23 +117,19 @@ export default function ReportsPage() {
     setSelectedReport(null);
   };
 
-  // Thêm mới một báo cáo lỗi giả lập vào danh sách
-  const handleCreateReport = (newReportData: Omit<ErrorReport, "id" | "status" | "createdAt">) => {
-    const newReport: ErrorReport = {
-      id: `REP-00${reports.length + 1}`,
-      movieName: newReportData.movieName,
-      episode: newReportData.episode || "Full Movie",
-      errorType: newReportData.errorType,
-      reportedBy: newReportData.reportedBy,
-      email: newReportData.email,
-      description: newReportData.description,
-      status: "pending",
-      createdAt: new Date().toISOString(),
-    };
-
-    setReports([newReport, ...reports]);
-    setIsCreateOpen(false);
-    toast.success("Đã tạo báo cáo lỗi thành công!");
+  // Thêm mới một báo cáo lỗi lên backend
+  const handleCreateReport = async (newReportData: Omit<ErrorReport, "id" | "status" | "createdAt">) => {
+    try {
+      const success = await apiCreateReport(newReportData);
+      if (success) {
+        toast.success("Đã tạo báo cáo lỗi thành công!");
+        fetchReports();
+        setIsCreateOpen(false);
+      }
+    } catch (error) {
+      console.error("Lỗi khi tạo báo cáo lỗi:", error);
+      toast.error("Tạo báo cáo lỗi thất bại");
+    }
   };
 
   // Hàm xuất danh sách báo cáo sự cố hiện tại ra file CSV hỗ trợ tiếng Việt

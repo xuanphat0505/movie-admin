@@ -40,14 +40,14 @@ export default function ReportTable({ reports, onOpenDetail }: ReportTableProps)
                   </td>
 
                   {/* Tập phim */}
-                  <td className="px-6 py-4 text-slate-600 dark:text-slate-400 font-medium">
+                  <td className="px-6 py-4 text-slate-600 dark:text-slate-400 font-medium whitespace-nowrap">
                     {report.episode}
                   </td>
 
                   {/* Loại sự cố */}
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 whitespace-nowrap">
                     <span
-                      className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                      className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap ${
                         report.errorType === "link"
                           ? "bg-rose-500/10 text-rose-500"
                           : report.errorType === "lag"
@@ -72,7 +72,7 @@ export default function ReportTable({ reports, onOpenDetail }: ReportTableProps)
                   </td>
 
                   {/* Người báo cáo */}
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 whitespace-nowrap">
                     <div className="font-semibold text-slate-700 dark:text-slate-350">
                       {report.reportedBy}
                     </div>
@@ -82,8 +82,8 @@ export default function ReportTable({ reports, onOpenDetail }: ReportTableProps)
                   </td>
 
                   {/* Trạng thái xử lý */}
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-1.5">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center gap-1.5 whitespace-nowrap">
                       <span
                         className={`w-1.5 h-1.5 rounded-full ${
                           report.status === "pending"
@@ -96,7 +96,7 @@ export default function ReportTable({ reports, onOpenDetail }: ReportTableProps)
                         }`}
                       />
                       <span
-                        className={`font-bold capitalize ${
+                        className={`font-bold capitalize whitespace-nowrap ${
                           report.status === "pending"
                             ? "text-rose-500"
                             : report.status === "resolving"
@@ -118,13 +118,13 @@ export default function ReportTable({ reports, onOpenDetail }: ReportTableProps)
                   </td>
 
                   {/* Thao tác chỉnh sửa */}
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-6 py-4 text-right whitespace-nowrap">
                     <button
                       onClick={() => onOpenDetail(report)}
-                      className="inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-500 hover:text-[#ff8300] bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 px-2.5 py-1.5 rounded-lg transition-all cursor-pointer"
+                      className="inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-500 hover:text-[#ff8300] bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 px-2.5 py-1.5 rounded-lg transition-all cursor-pointer whitespace-nowrap"
                     >
                       <Eye size={12} />
-                      <span>Xem chi tiết</span>
+                      <span className="whitespace-nowrap">Xem chi tiết</span>
                     </button>
                   </td>
                 </tr>
