@@ -5,6 +5,10 @@ export const API_ENDPOINTS = {
     ADMIN_GOOGLE_LOGIN: "/auth/admin/google-login",
     REFRESH_TOKEN: "/auth/refresh-token",
     LOGOUT: "/auth/logout",
+    MFA_SETUP: "/auth/mfa/setup",
+    MFA_VERIFY: "/auth/mfa/verify",
+    MFA_DISABLE: "/auth/mfa/disable",
+    MFA_LOGIN: "/auth/admin/mfa-login",
   },
   ANALYTICS: {
     GENDER_STATS: "/analytics/gender-stats",

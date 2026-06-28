@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, FormEvent } from "react";
-import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { authApi } from "@/apis/authApi";
 import { toast } from "@/utils/toast";
@@ -18,6 +18,9 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [isMfaStep, setIsMfaStep] = useState(false);
+  const [tempToken, setTempToken] = useState("");
+  const [otpCode, setOtpCode] = useState("");
 
   const router = useRouter();
 
@@ -35,6 +38,14 @@ export default function LoginPage() {
       });
 
       if (res.data?.success && res.data?.data) {
+        // Kiểm tra xem backend có yêu cầu xác thực hai lớp hay không
+        if (res.data.data.mfaRequired) {
+          setIsMfaStep(true);
+          setTempToken(res.data.data.tempToken);
+          setLoading(false);
+          return;
+        }
+
         const { accessToken, ...userData } = res.data.data;
 
         // Lưu Access Token và thông tin cơ bản của admin vào localStorage
@@ -49,6 +60,41 @@ export default function LoginPage() {
       const message =
         error.response?.data?.message ||
         "Đăng nhập thất bại. Vui lòng kiểm tra lại.";
+      setErrorMsg(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Xử lý gửi mã OTP đăng nhập bước 2
+  const handleMfaSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!otpCode || otpCode.length !== 6) {
+      setErrorMsg("Vui lòng nhập đủ 6 chữ số mã xác thực!");
+      return;
+    }
+
+    setLoading(true);
+    setErrorMsg("");
+
+    try {
+      const res = await authApi.mfaLogin({
+        tempToken,
+        code: otpCode,
+      });
+
+      if (res.data?.success && res.data?.data) {
+        const { accessToken, ...userData } = res.data.data;
+        localStorage.setItem("adminToken", accessToken);
+        localStorage.setItem("adminUser", JSON.stringify(userData));
+        toast.success("Đăng nhập xác thực 2 lớp thành công!");
+        router.push("/");
+      }
+    } catch (error: any) {
+      console.error("Lỗi xác thực MFA:", error);
+      const message =
+        error.response?.data?.message ||
+        "Mã xác thực không hợp lệ hoặc đã hết hạn.";
       setErrorMsg(message);
     } finally {
       setLoading(false);
@@ -101,7 +147,9 @@ export default function LoginPage() {
             Stream Lab Admin
           </h2>
           <p className="text-xs text-slate-400 mt-2 font-medium">
-            Vui lòng đăng nhập để tiếp tục truy cập trang quản trị hệ thống
+            {isMfaStep
+              ? "Vui lòng nhập mã xác thực 6 số trên ứng dụng Google Authenticator để đăng nhập"
+              : "Vui lòng đăng nhập để tiếp tục truy cập trang quản trị hệ thống"}
           </p>
         </div>
 
@@ -112,111 +160,169 @@ export default function LoginPage() {
           </div>
         )}
 
-        {/* Form Đăng nhập */}
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Trường nhập Email */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block">
-              Địa chỉ Email
-            </label>
-            <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500 group-focus-within:text-[#ff8300] transition-colors">
-                <Mail size={16} />
+        {!isMfaStep ? (
+          <>
+            {/* Form Đăng nhập */}
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Trường nhập Email */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block">
+                  Địa chỉ Email
+                </label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500 group-focus-within:text-[#ff8300] transition-colors">
+                    <Mail size={16} />
+                  </div>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="admin@streamlab.com"
+                    className="w-full pl-10 pr-4 py-3 bg-slate-950/50 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-600 focus:outline-none focus:border-[#ff8300] focus:ring-1 focus:ring-[#ff8300]/50 transition-all duration-200"
+                  />
+                </div>
               </div>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@streamlab.com"
-                className="w-full pl-10 pr-4 py-3 bg-slate-950/50 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-600 focus:outline-none focus:border-[#ff8300] focus:ring-1 focus:ring-[#ff8300]/50 transition-all duration-200"
-              />
-            </div>
-          </div>
 
-          {/* Trường nhập Mật khẩu */}
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <label className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-                Mật khẩu
-              </label>
-              <a
-                href="#forgot"
-                className="text-xs font-semibold text-[#ff8300] hover:text-[#ff8300]/90 transition-colors"
-              >
-                Quên mật khẩu?
-              </a>
-            </div>
-            <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500 group-focus-within:text-[#ff8300] transition-colors">
-                <Lock size={16} />
+              {/* Trường nhập Mật khẩu */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <label className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                    Mật khẩu
+                  </label>
+                  <a
+                    href="#forgot"
+                    className="text-xs font-semibold text-[#ff8300] hover:text-[#ff8300]/90 transition-colors"
+                  >
+                    Quên mật khẩu?
+                  </a>
+                </div>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500 group-focus-within:text-[#ff8300] transition-colors">
+                    <Lock size={16} />
+                  </div>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full pl-10 pr-10 py-3 bg-slate-950/50 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-600 focus:outline-none focus:border-[#ff8300] focus:ring-1 focus:ring-[#ff8300]/50 transition-all duration-200"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-slate-300 transition-colors"
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
               </div>
-              <input
-                type={showPassword ? "text" : "password"}
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full pl-10 pr-10 py-3 bg-slate-950/50 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-600 focus:outline-none focus:border-[#ff8300] focus:ring-1 focus:ring-[#ff8300]/50 transition-all duration-200"
-              />
+
+              {/* Nhớ mật khẩu */}
+              <div className="flex items-center">
+                <input
+                  id="remember-me"
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-800 bg-slate-950/50 text-[#ff8300] focus:ring-[#ff8300]/50 focus:ring-offset-slate-950 cursor-pointer"
+                />
+                <label
+                  htmlFor="remember-me"
+                  className="ml-2.5 text-xs font-semibold text-slate-400 cursor-pointer select-none"
+                >
+                  Ghi nhớ đăng nhập
+                </label>
+              </div>
+
+              {/* Nút đăng nhập */}
               <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-slate-300 transition-colors"
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 px-4 bg-linear-to-r from-[#ff8300] to-orange-600 hover:from-[#ff8300]/90 hover:to-orange-600/90 text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-orange-500/10 hover:shadow-orange-500/20 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
               >
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                {loading ? (
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <span>Đăng nhập hệ thống</span>
+                    <ArrowRight size={16} />
+                  </>
+                )}
               </button>
+            </form>
+
+            {/* Nút đăng nhập Google bổ sung */}
+            <div className="relative my-6 flex items-center justify-center">
+              <div className="absolute inset-x-0 h-px bg-slate-800" />
+              <span className="relative px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-slate-900/60 backdrop-blur-xl">
+                Hoặc tiếp tục bằng
+              </span>
             </div>
-          </div>
 
-          {/* Nhớ mật khẩu */}
-          <div className="flex items-center">
-            <input
-              id="remember-me"
-              type="checkbox"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-              className="w-4 h-4 rounded border-slate-800 bg-slate-950/50 text-[#ff8300] focus:ring-[#ff8300]/50 focus:ring-offset-slate-950 cursor-pointer"
-            />
-            <label
-              htmlFor="remember-me"
-              className="ml-2.5 text-xs font-semibold text-slate-400 cursor-pointer select-none"
+            <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+              <GoogleLoginBtn
+                onLoginSuccess={handleGoogleLoginSuccess}
+                onLoginError={(msg) => setErrorMsg(msg)}
+              />
+            </GoogleOAuthProvider>
+          </>
+        ) : (
+          /* Form Nhập mã OTP xác thực */
+          <form onSubmit={handleMfaSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block text-center">
+                Mã xác thực OTP (6 chữ số)
+              </label>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500 group-focus-within:text-[#ff8300] transition-colors">
+                  <ShieldCheck size={16} />
+                </div>
+                <input
+                  type="text"
+                  maxLength={6}
+                  required
+                  value={otpCode}
+                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
+                  placeholder="Nhập 6 chữ số"
+                  className="w-full pl-10 pr-4 py-3 bg-slate-950/50 border border-slate-800 rounded-xl text-sm text-center font-bold tracking-widest text-white placeholder-slate-600 focus:outline-none focus:border-[#ff8300] focus:ring-1 focus:ring-[#ff8300]/50 transition-all duration-200"
+                />
+              </div>
+            </div>
+
+            {/* Nút xác nhận */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 px-4 bg-linear-to-r from-[#ff8300] to-orange-600 hover:from-[#ff8300]/90 hover:to-orange-600/90 text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-orange-500/10 hover:shadow-orange-500/20 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
             >
-              Ghi nhớ đăng nhập
-            </label>
-          </div>
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <>
+                  <span>Xác nhận đăng nhập</span>
+                  <ArrowRight size={16} />
+                </>
+              )}
+            </button>
 
-          {/* Nút đăng nhập */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 px-4 bg-linear-to-r from-[#ff8300] to-orange-600 hover:from-[#ff8300]/90 hover:to-orange-600/90 text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-orange-500/10 hover:shadow-orange-500/20 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
-          >
-            {loading ? (
-              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            ) : (
-              <>
-                <span>Đăng nhập hệ thống</span>
-                <ArrowRight size={16} />
-              </>
-            )}
-          </button>
-        </form>
-
-        {/* Nút đăng nhập Google bổ sung */}
-        <div className="relative my-6 flex items-center justify-center">
-          <div className="absolute inset-x-0 h-px bg-slate-800" />
-          <span className="relative px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-slate-900/60 backdrop-blur-xl">
-            Hoặc tiếp tục bằng
-          </span>
-        </div>
-
-        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-          <GoogleLoginBtn
-            onLoginSuccess={handleGoogleLoginSuccess}
-            onLoginError={(msg) => setErrorMsg(msg)}
-          />
-        </GoogleOAuthProvider>
+            {/* Nút quay lại */}
+            <button
+              type="button"
+              onClick={() => {
+                setIsMfaStep(false);
+                setOtpCode("");
+                setTempToken("");
+                setErrorMsg("");
+              }}
+              className="w-full py-2.5 text-slate-400 hover:text-slate-200 font-bold text-xs flex items-center justify-center gap-1 transition-colors cursor-pointer"
+            >
+              <ChevronLeft size={14} />
+              <span>Quay lại trang đăng nhập</span>
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );

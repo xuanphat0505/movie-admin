@@ -31,4 +31,24 @@ export const authApi = {
       },
     });
   },
+
+  // Lấy thông tin thiết lập bảo mật 2 lớp (QR và Secret)
+  mfaSetup: () => {
+    return apiClient.get(API_ENDPOINTS.AUTH.MFA_SETUP);
+  },
+
+  // Xác thực và kích hoạt bảo mật 2 lớp
+  mfaVerify: (data: { token: string; secret: string }) => {
+    return apiClient.post(API_ENDPOINTS.AUTH.MFA_VERIFY, data);
+  },
+
+  // Hủy kích hoạt bảo mật 2 lớp
+  mfaDisable: (data: { token: string }) => {
+    return apiClient.post(API_ENDPOINTS.AUTH.MFA_DISABLE, data);
+  },
+
+  // Đăng nhập bước 2 bằng mã xác thực 2 lớp
+  mfaLogin: (data: { tempToken: string; code: string }) => {
+    return apiClient.post(API_ENDPOINTS.AUTH.MFA_LOGIN, data);
+  },
 };
