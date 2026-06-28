@@ -29,4 +29,9 @@ export const API_ENDPOINTS = {
     READ_ALL: "/notification/read-all",
   },
   SETTING: "/setting",
+  REPORT: {
+    GET_ALL: "/report",
+    CREATE: "/report",
+    UPDATE_STATUS: (id: string) => `/report/${id}/status`,
+  },
 };
