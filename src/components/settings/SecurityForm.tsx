@@ -68,10 +68,10 @@ export default function SecurityForm({
     <form onSubmit={handleSavePassword} className="space-y-6 text-xs">
       <div className="border-b border-slate-100 dark:border-slate-800/50 pb-4 mb-4">
         <h3 className="font-bold text-sm text-slate-800 dark:text-white">
-          Bảo mật & Mật khẩu
+          Mật khẩu tài khoản
         </h3>
         <p className="text-[10px] text-slate-400 mt-0.5">
-          Đổi mật khẩu tài khoản để giữ an toàn tối đa cho Control Panel.
+          Đổi mật khẩu tài khoản định kỳ để giữ an toàn tối đa cho Control Panel.
         </p>
       </div>
 

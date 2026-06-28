@@ -7,6 +7,7 @@ import {
   SettingsTabs,
   ProfileForm,
   SecurityForm,
+  MfaForm,
   NotificationsForm,
   SystemForm,
   TabId,
@@ -64,7 +65,16 @@ export default function SettingsPage() {
           )}
 
           {activeTab === "security" && (
-            <SecurityForm currentAdmin={currentAdmin} />
+            <SecurityForm
+              currentAdmin={currentAdmin}
+            />
+          )}
+
+          {activeTab === "mfa" && (
+            <MfaForm
+              currentAdmin={currentAdmin}
+              onProfileUpdate={handleProfileUpdate}
+            />
           )}
 
           {activeTab === "notifications" && (

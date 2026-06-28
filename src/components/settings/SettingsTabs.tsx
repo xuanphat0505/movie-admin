@@ -1,7 +1,7 @@
 import React from "react";
-import { User, Lock, Bell, Settings2 } from "lucide-react";
+import { User, Lock, Shield, Bell, Settings2 } from "lucide-react";
 
-export type TabId = "profile" | "security" | "notifications" | "system";
+export type TabId = "profile" | "security" | "mfa" | "notifications" | "system";
 
 export interface SettingTab {
   id: TabId;
@@ -19,9 +19,15 @@ export const SETTINGS_TABS: SettingTab[] = [
   },
   {
     id: "security",
-    title: "Bảo mật & Mật khẩu",
-    description: "Đổi mật khẩu và thiết lập bảo vệ tài khoản",
+    title: "Mật khẩu tài khoản",
+    description: "Đổi mật khẩu bảo mật đăng nhập cá nhân",
     icon: Lock,
+  },
+  {
+    id: "mfa",
+    title: "Bảo mật 2 lớp (2FA)",
+    description: "Kích hoạt xác thực Google Authenticator tăng độ an toàn",
+    icon: Shield,
   },
   {
     id: "notifications",
