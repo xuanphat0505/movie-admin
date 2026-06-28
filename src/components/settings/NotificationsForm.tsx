@@ -5,25 +5,31 @@ import { toast } from "@/utils/toast";
 
 interface NotificationsFormProps {
   currentAdmin: any;
+  onProfileUpdate?: (updatedAdmin: any) => void;
 }
 
 // Component chứa biểu mẫu cấu hình kênh thông báo nhận tin của quản trị viên
 export default function NotificationsForm({
   currentAdmin,
+  onProfileUpdate,
 }: NotificationsFormProps) {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const [notifyForm, setNotifyForm] = useState({
-    mail: true,
-    desktop: true,
-  });
+  const [notifyForm, setNotifyForm] = useState(() => ({
+    mail: currentAdmin?.adminInfo?.notificationOptions?.mail ?? true,
+    desktop: currentAdmin?.adminInfo?.notificationOptions?.desktop ?? true,
+  }));
 
-  // Tự động gán cấu hình nhận thông báo ban đầu của tài khoản
+  // Tự động đồng bộ cấu hình nhận thông báo khi thông tin tài khoản thay đổi
   useEffect(() => {
     if (currentAdmin) {
-      setNotifyForm({
-        mail: currentAdmin.adminInfo?.notificationOptions?.mail ?? true,
-        desktop: currentAdmin.adminInfo?.notificationOptions?.desktop ?? true,
+      setNotifyForm((prev) => {
+        const mail = currentAdmin.adminInfo?.notificationOptions?.mail ?? true;
+        const desktop = currentAdmin.adminInfo?.notificationOptions?.desktop ?? true;
+        if (prev.mail !== mail || prev.desktop !== desktop) {
+          return { mail, desktop };
+        }
+        return prev;
       });
     }
   }, [currentAdmin]);
@@ -49,6 +55,9 @@ export default function NotificationsForm({
 
       if (res.data?.success && res.data?.data) {
         localStorage.setItem("adminUser", JSON.stringify(res.data.data));
+        if (onProfileUpdate) {
+          onProfileUpdate(res.data.data);
+        }
         toast.success("Đã lưu cài đặt thông báo thành công!");
       }
     } catch (error: any) {
