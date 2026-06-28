@@ -80,6 +80,7 @@ export default function SettingsPage() {
           {activeTab === "notifications" && (
             <NotificationsForm
               currentAdmin={currentAdmin}
+              onProfileUpdate={handleProfileUpdate}
             />
           )}
 
