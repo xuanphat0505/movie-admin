@@ -33,8 +33,9 @@ export default function CategoryTab({
               : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
           }`}
         >
-          <Tags size={14} />
-          <span>Thể loại phim ({genresCount})</span>
+          <Tags size={14} className="shrink-0" />
+          <span className="hidden sm:inline">Thể loại phim ({genresCount})</span>
+          <span className="inline sm:hidden">Thể loại</span>
         </button>
         <button
           onClick={() => {
@@ -47,8 +48,9 @@ export default function CategoryTab({
               : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
           }`}
         >
-          <Globe size={14} />
-          <span>Quốc gia sản xuất ({countriesCount})</span>
+          <Globe size={14} className="shrink-0" />
+          <span className="hidden sm:inline">Quốc gia sản xuất ({countriesCount})</span>
+          <span className="inline sm:hidden">Quốc gia</span>
         </button>
       </div>
 

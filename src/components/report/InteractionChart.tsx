@@ -63,39 +63,39 @@ export default function InteractionChart({
   };
 
   return (
-    <div className="lg:col-span-2 min-w-0 bg-white border border-slate-200/80 rounded-2xl p-6 flex flex-col justify-between dark:bg-slate-900/40 dark:border-slate-900/60">
-      <div className="flex items-center justify-between mb-6">
-        <div>
+    <div className="lg:col-span-2 min-w-0 bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-6 flex flex-col justify-between dark:bg-slate-900/40 dark:border-slate-900/60">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div className="space-y-0.5">
           <h3 className="text-sm font-semibold text-slate-800 dark:text-white flex items-center gap-1.5">
             <span>Xu hướng tương tác</span>
             <span className="text-[10px] bg-emerald-500/10 text-emerald-500 px-1.5 py-0.5 rounded-full font-bold">
               +24% tháng này
             </span>
           </h3>
-          <span className="text-xs text-slate-400">
+          <p className="text-xs text-slate-400 leading-relaxed">
             So sánh số lượt bình luận và lưu yêu thích qua các tháng
-          </span>
+          </p>
         </div>
 
         {/* Hiển thị số liệu thực tế từ API ở đầu chart */}
-        <div className="flex items-center gap-4 text-xs font-bold">
-          <div className="text-right">
+        <div className="flex items-center gap-5 text-xs font-bold self-start sm:self-auto">
+          <div className="text-left sm:text-right">
             <span className="text-[10px] text-slate-400 block font-normal">
               Tổng yêu thích
             </span>
-            <span className="text-slate-800 dark:text-white flex items-center justify-end gap-1">
-              <Heart size={12} className="text-[#ff8300] fill-[#ff8300]" />
+            <span className="text-slate-800 dark:text-white flex items-center gap-1 sm:justify-end">
+              <Heart size={12} className="text-[#ff8300] fill-[#ff8300] shrink-0" />
               {loadingStats
                 ? "..."
                 : liveStats.totalFavorites.toLocaleString("vi-VN")}
             </span>
           </div>
-          <div className="text-right">
+          <div className="text-left sm:text-right">
             <span className="text-[10px] text-slate-400 block font-normal">
               Tổng bình luận
             </span>
-            <span className="text-slate-800 dark:text-white flex items-center justify-end gap-1">
-              <MessageSquare size={12} className="text-indigo-500" />
+            <span className="text-slate-800 dark:text-white flex items-center gap-1 sm:justify-end">
+              <MessageSquare size={12} className="text-indigo-500 shrink-0" />
               {loadingStats
                 ? "..."
                 : liveStats.totalComments.toLocaleString("vi-VN")}
