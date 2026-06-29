@@ -35,12 +35,12 @@ export default function UserFilterBar({
         />
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
         {/* Lọc theo Vai trò */}
         <select
           value={selectedRole}
           onChange={(e) => setSelectedRole(e.target.value)}
-          className="bg-white border border-slate-200 dark:bg-slate-900/40 dark:border-slate-800/80 rounded-xl h-[38px] px-3 text-xs text-slate-650 dark:text-slate-350 focus:outline-none focus:border-[#ff8300]/50 cursor-pointer"
+          className="w-full sm:w-auto bg-white border border-slate-200 dark:bg-slate-900/40 dark:border-slate-800/80 rounded-xl h-[38px] px-3 text-xs text-slate-650 dark:text-slate-350 focus:outline-none focus:border-[#ff8300]/50 cursor-pointer"
         >
           <option value="">Tất cả quyền hạn</option>
           <option value="user">Người dùng (User)</option>
@@ -51,7 +51,7 @@ export default function UserFilterBar({
         <select
           value={selectedStatus}
           onChange={(e) => setSelectedStatus(e.target.value)}
-          className="bg-white border border-slate-200 dark:bg-slate-900/40 dark:border-slate-800/80 rounded-xl h-[38px] px-3 text-xs text-slate-650 dark:text-slate-350 focus:outline-none focus:border-[#ff8300]/50 cursor-pointer"
+          className="w-full sm:w-auto bg-white border border-slate-200 dark:bg-slate-900/40 dark:border-slate-800/80 rounded-xl h-[38px] px-3 text-xs text-slate-650 dark:text-slate-350 focus:outline-none focus:border-[#ff8300]/50 cursor-pointer"
         >
           <option value="">Tất cả trạng thái</option>
           <option value="active">Đang hoạt động</option>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { BarChart, Bar, XAxis, ResponsiveContainer, Tooltip } from "recharts";
 
 const weeklyData = [
@@ -40,7 +40,7 @@ export default function ViewsChart() {
   return (
     <div className="flex-1 min-w-0 p-6 rounded-2xl bg-white border border-slate-200 shadow-sm dark:bg-slate-900/40 dark:border-slate-900/60 dark:shadow-none">
       {/* Header chart */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between flex-wrap gap-4 mb-8">
         <div>
           <h3 className="text-sm font-semibold text-slate-800 dark:text-white">
             Weekly Traffic & Movie Views
